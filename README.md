@@ -26,4 +26,4 @@ A small description of the required conversion:
 ## Allowed functions
 malloc, free, write, va_start, va_arg, va_copy,
 va_end
-.
+<<>><<<<>>>>
