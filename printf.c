@@ -6,13 +6,62 @@
 /*   By: hjimenez <hjimenez@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/11 22:49:52 by hjimenez          #+#    #+#             */
-/*   Updated: 2021/12/11 22:52:45 by hjimenez         ###   ########.fr       */
+/*   Updated: 2021/12/12 12:20:13 by hjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdlib.h>
+
+size_t			printstr(char *str);
+static	void		min_neg(int o, char *cad);
+static void		acaracteres(int o, int i, int n, char *cad);
+char			*ft_itoa(int num);
+void			*ft_calloc(size_t count, size_t size);
+void			ft_bzero(void *s, size_t n);
+
+void	ft_bzero(void *s, size_t n)
+{
+	char			*cadena;
+	size_t			i;
+
+	cadena = (char *) s;
+	i = 0;
+	while (i < n)
+	{
+		cadena[i] = '\0';
+		i++;
+	}	
+}
+
+void	*ft_calloc(size_t count, size_t size)
+{
+	void	*puntero;
+
+	puntero = (void *)malloc(size * count);
+	if (puntero == NULL)
+		return (NULL);
+	ft_bzero(puntero, size * count);
+	return (puntero);
+}
+
+size_t	printstr(char *str)
+{
+	int	i;
+	size_t printedChars;
+
+	printedChars = 0;
+	i = 0;
+	while (str[i] != '\0')
+	{
+		write(1, &str[i], 1);
+		i++;
+		printedChars++;
+	}
+	return (printedChars);
+}
 
 int	ft_printf(const char *fmt, ...)
 {
@@ -22,26 +71,32 @@ int	ft_printf(const char *fmt, ...)
 	char	*s;
 	size_t	i;
 	int		iv;
+	size_t	printedChars;
 
+	printedChars = 0;
 	i = 0;
 	va_start(ap, fmt);
-	while (fmt[i] != '%')
+	while (fmt[i] != 0 && fmt[i] !='%')
 	{
-		write(1, &fmt[i], 1);
+		write(1, &(fmt[i]), 1);
 		i++;
+		printedChars++;
 	}
+	
 	if (fmt[i] == '%')
 	{
 		i++;
-		printf("Entra");
 		if (fmt[i] == 's')
 		{
 			printf("Entra2");
 			s = va_arg(ap, char *);
+			return 1;
 			printstr(s);
 		}
+		
 		else if (fmt[i] == 'd')
 		{
+			return 1;
 			d = va_arg(ap, int);
 			s = ft_itoa(d);
 			printstr(s);
@@ -50,110 +105,111 @@ int	ft_printf(const char *fmt, ...)
 		{
 			/* need a cast here since va_arg only
 			   takes fully promoted types */
+			   
+			   return 1;
 			c = (char) va_arg(ap, int);
-			write(1,&c,1);
+			write(1, &c, 1);
 		}
 		else if (fmt[i] == 'i')
 		{
-			iv = va_arg(ap, int);
-			if (iv >= 0)
-			{
-				s = ft_itoa(d);
-				printstr(s);
-			}
-			else
-			{
-		}
+				s = ft_itoa(va_arg(ap, int));
+				printedChars += printstr(s);
 		}
 	}
 	va_end(ap);
-	return (i);
+	return (printedChars);
 }
-
-static void	min_neg(int o, char *cad)
+static size_t	ft_convert_number(int n)
 {
-	char	*num2;
-	int		x;
+	size_t	nn;
 
-	x = 0;
-	num2 = "-2147483648";
-	if (o == -2147483648)
-	{
-		while (num2[x] != '\0')
-		{
-			cad[x] = num2[x];
-			x++;
-		}
-	}
-}
-
-static void	acaracteres(int o, int i, int n, char *cad)
-{
-	int	num;
-
-	num = i;
 	if (n < 0)
-		n = n * -1;
-	while (i >= 0)
 	{
-		cad[i] = (n % 10) + '0';
-		n = n / 10;
-		i--;
+		nn = (n + 1) * -1;
+		nn++;
 	}
-	n = 0;
-	cad[num + 1] = '\0';
-	while (n <= num && o > 0)
-	{
-		cad[n] = cad[n + 1];
-		n++;
-	}
-	if (o < 0)
-		cad[0] = '-';
+	else
+		nn = n;
+	return (nn);
 }
 
-char	*ft_itoa(int num)
+static int	get_arr_size(int n)
 {
-	int		i;
-	char	*cad;
-	int		n;
-	int		o;
+	signed int	sign;
+	size_t		stn;
+	size_t		arr_length;
 
-	o = num;
-	n = num;
-	i = 0;
-	if (num < 0)
-		num = num * -1;
-	while (num != 0)
+	arr_length = 1;
+	if (n == 0)
+		return (2);
+	else if (n == -2147483648)
+		return (12);
+	if (n < 0)
 	{
-		num = num / 10;
-		i++;
+		sign = -1;
+		stn = (n * sign);
+		arr_length++;
 	}
-	cad = (char *)ft_calloc(i + 2, sizeof(char));
-	if (cad == NULL)
+	else
+		stn = n;
+	while (stn != 0)
+	{
+		stn = (stn / 10);
+		arr_length++;
+	}
+	return (arr_length);
+}
+
+char	*ft_itoa(int n)
+{
+	size_t	nn;
+	int		arrlength;
+	char	*character;
+	size_t	index;
+
+	arrlength = get_arr_size(n);
+	character = ft_calloc(arrlength--, sizeof(char));
+	if (!character)
 		return (NULL);
-	if (o == -2147483648)
+	if (n < 0)
+		character[0] = '-';
+	nn = ft_convert_number(n);
+	if (n == 0)
+		character[0] = '0';
+	index = 0;
+	while (nn != 0)
 	{
-		min_neg(o, cad);
-		return (cad);
+		*(character + arrlength - 1 - index) = '0' + nn % 10;
+		nn = (nn / 10);
+		index++;
 	}
-	acaracteres(o, i, n, cad);
-	return (cad);
-}
-void printstr(char *str)
-{
-	int i;
-	
-	i = 0;
-	while (str[i] != '\0')
-	{
-		write(1,&str[i],1);
-	}
+	return (character);
 }
 
-int  main(){
+int	main(void)
+{
   //  ft_printf("Hola que tal %d",8);
-  printf("El número es %i", -2);
-	printf("\nEl número es %d", -2);
-		printf("\nEl número es %u", 2);
- 
+	int	printed_chars;
+
+	
+	printed_chars = ft_printf("El número es %i", 5555);
+	ft_printf("\nPrinted charachters are ***%i", printed_chars);
 }
+
+
+/*Project Flow
+##Modulo 1, iterate
+1- Recieve arguments
+2- Iterate over characters while not nulll
+	1- if char is not "%", then add it to the print_string, then call (1-2 iterator).
+	2- if char is "%", then then call (2-1 flag check)
+
+
+##Modulo 2, check for flags
+1-validate flags
+
+##Modulo 3, check for format specifiers
+1-check format to be printed
+2-Call formatter for each format
+3-Append to pritn string (with format specifiers included
+*/
