@@ -6,36 +6,11 @@
 /*   By: hjimenez <hjimenez@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 19:24:04 by hjimenez          #+#    #+#             */
-/*   Updated: 2021/12/15 21:30:50 by hjimenez         ###   ########.fr       */
+/*   Updated: 2021/12/15 21:49:56 by hjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
-
-void	ft_bzero(void *s, size_t n)
-{
-	char	*string;
-	size_t	i;
-
-	string = (char *) s;
-	i = 0;
-	while (i < n)
-	{
-		string[i] = '\0';
-		i++;
-	}	
-}
-
-void	*ft_calloc(size_t count, size_t size)
-{
-	void	*puntero;
-
-	puntero = (void *)malloc(size * count);
-	if (puntero == NULL)
-		return (NULL);
-	ft_bzero(puntero, size * count);
-	return (puntero);
-}
 
 static void	min_neg(int o, char *cad)
 {
@@ -81,7 +56,7 @@ static void	acaracteres(int o, int i, int n, char *cad)
 char	*ft_itoa(int num)
 {
 	int		i;
-	char	*cad;
+	char	*str;
 	int		n;
 	int		o;
 
@@ -95,20 +70,26 @@ char	*ft_itoa(int num)
 		num = num / 10;
 		i++;
 	}
-	cad = (char *)ft_calloc(i + 2, sizeof(char));
-	if (cad == NULL)
+	str = (char *)malloc(i + 2);
+	if (str == NULL)
 		return (NULL);
 	if (o == -2147483648)
 	{
-		min_neg(o, cad);
-		return (cad);
+		min_neg(o, str);
+		return (str);
 	}
-	acaracteres(o, i, n, cad);
-	return (cad);
+	acaracteres(o, i, n, str);
+	return (str);
 }
 
-int	ft_printstring(char *str, int size)
+int	ft_printstring(char *str, int size, char caller)
 {
+	if (caller == 'c')
+	{
+	write(1, &str[0])
+	size++
+	return (size);
+	}
 	int	i;
 
 	i = 0;
@@ -273,7 +254,7 @@ int	ft_formatter(va_list args, char c, int w_count)
 	if (c == 'c')
 		w_count = ft_printchar(va_arg(args, int), w_count);
 	if (c == 's')
-		w_count = ft_printstring(va_arg(args, char *), w_count);
+		w_count = ft_printstring(va_arg(args, char *, char caller), w_count);
 	if (c == 'p')
 		w_count = ft_printvoid(va_arg(args, void *), w_count);
 	if (c == 'd' || c == 'i')
