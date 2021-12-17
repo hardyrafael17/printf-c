@@ -82,14 +82,8 @@ char	*ft_itoa(int num)
 	return (str);
 }
 
-int	ft_printstring(char *str, int size, char caller)
+int	ft_printstring(char *str, int size)
 {
-	if (caller == 'c')
-	{
-	write(1, &str[0])
-	size++
-	return (size);
-	}
 	int	i;
 
 	i = 0;
@@ -159,23 +153,13 @@ int	ft_printchar(char c, int w_count)
 
 int	ft_printvoid(void *ptr, int w_count)
 {
-	long int	ptrnum;
 	char		*strnum;
-	int			i;
 
-	i = 0;
-	ptrnum = (unsigned long int)ptr;
-	strnum = ft_itoa_void(ptrnum, "0123456789abcdefg");
-	write(1, "0x", 2);
-	w_count += 2;
-	while (strnum[i])
-	{
-		write(1, &strnum[i], 1);
-		i++;
-		w_count++;
-	}
-	free(strnum);
-	return (w_count);
+	strnum = ft_itoa_void((unsigned long int) ptr, "0123456789abcdefg");
+	//replacing code
+	ft_write("0x", 'n', 'e');
+	ft_write(strnum, 'n', 'i');
+	return (1);
 }
 
 int	ft_lp(char *str, int size)
@@ -252,23 +236,20 @@ char	*ft_ib(unsigned int n, char *base)
 int	ft_formatter(va_list args, char c, int w_count)
 {
 	if (c == 'c')
-		w_count = ft_printchar(va_arg(args, int), w_count);
+		w_count = ft_write(NULL, va_arg(args, int), 'c');
 	if (c == 's')
-		w_count = ft_printstring(va_arg(args, char *, char caller), w_count);
+		w_count = ft_write(va_arg(args, char *),'n', 'e');
 	if (c == 'p')
 		w_count = ft_printvoid(va_arg(args, void *), w_count);
 	if (c == 'd' || c == 'i')
-		w_count = ft_lp(ft_itoa(va_arg(args, int)), w_count);
+		w_count = ft_write(ft_itoa(va_arg(args, int)), 'n', 'i');
 	if (c == 'u')
-		w_count = ft_lp(ft_itoa_unsig(va_arg(args, unsigned int)), w_count);
+		w_count = ft_write(ft_itoa_unsig(va_arg(args, unsigned int)), 'n', 'i');
 	if (c == 'x')
-		w_count = ft_lp(ft_ib(va_arg(args, int), "0123456789abcdef"), w_count);
+		w_count = ft_write(ft_ib(va_arg(args, int), "0123456789abcdef"), 'n', 'i');
 	if (c == 'X')
-		w_count = ft_lp(ft_ib(va_arg(args, int), "0123456789ABCDEF"), w_count);
+		w_count = ft_write(ft_ib(va_arg(args, int), "0123456789ABCDEF"), 'n', 'i');
 	if (c == '%')
-	{
-		write(1, "%", 1);
-		w_count++;
-	}
+		ft_write(NULL, '%', 'c');
 	return (w_count);
 }

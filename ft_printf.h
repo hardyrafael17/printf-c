@@ -16,7 +16,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-int			ft_write(char *str, char task_type);
+int			ft_write(char *str, int c, char task_type);
 int			ft_printf(const char *fmt, ...);
 void			ft_bzero(void *s, size_t n);
 void			*ft_calloc(size_t count, size_t size);
