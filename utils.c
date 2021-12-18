@@ -6,13 +6,13 @@
 /*   By: hjimenez <hjimenez@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/15 19:24:04 by hjimenez          #+#    #+#             */
-/*   Updated: 2021/12/15 21:49:56 by hjimenez         ###   ########.fr       */
+/*   Updated: 2021/12/18 21:41:05 by hjimenez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-static void	min_neg(int o, char *cad)
+static void	min_neg(int o, char *str)
 {
 	char	*num2;
 	int		x;
@@ -23,13 +23,13 @@ static void	min_neg(int o, char *cad)
 	{
 		while (num2[x] != '\0')
 		{
-			cad[x] = num2[x];
+			str[x] = num2[x];
 			x++;
 		}
 	}
 }
 
-static void	acaracteres(int o, int i, int n, char *cad)
+static void	ft_characters(int o, int i, int n, char *str)
 {
 	int	num;
 
@@ -38,19 +38,19 @@ static void	acaracteres(int o, int i, int n, char *cad)
 		n = n * -1;
 	while (i >= 0)
 	{
-		cad[i] = (n % 10) + '0';
+		str[i] = (n % 10) + '0';
 		n = n / 10;
 		i--;
 	}
 	n = 0;
-	cad[num + 1] = '\0';
+	str[num + 1] = '\0';
 	while (n <= num && o > 0)
 	{
-		cad[n] = cad[n + 1];
+		str[n] = str[n + 1];
 		n++;
 	}
 	if (o < 0)
-		cad[0] = '-';
+		str[0] = '-';
 }
 
 char	*ft_itoa(int num)
@@ -70,7 +70,7 @@ char	*ft_itoa(int num)
 		num = num / 10;
 		i++;
 	}
-	str = (char *)malloc(i + 2);
+	str = (char *)ft_calloc(i + 2, sizeof(char));
 	if (str == NULL)
 		return (NULL);
 	if (o == -2147483648)
@@ -78,40 +78,18 @@ char	*ft_itoa(int num)
 		min_neg(o, str);
 		return (str);
 	}
-	acaracteres(o, i, n, str);
+	ft_characters(o, i, n, str);
 	return (str);
-}
-
-int	ft_printstring(char *str, int size, char caller)
-{
-	if (caller == 'c')
-	{
-	write(1, &str[0])
-	size++
-	return (size);
-	}
-	int	i;
-
-	i = 0;
-	if (!str)
-	{
-		write(1, "(null)", 6);
-		return (size + 6);
-	}
-	while (str[i])
-	{
-		write(1, &str[i++], 1);
-		size++;
-	}
-	return (size);
 }
 
 char	*ft_itoa_void(unsigned long int n, char *base)
 {
 	int					size;
-	char				*a;
+	char				*str;
 	unsigned long int	num;
 
+	if (n == 0)
+		return (NULL);
 	size = 0;
 	num = n;
 	if (num == 0)
@@ -121,154 +99,28 @@ char	*ft_itoa_void(unsigned long int n, char *base)
 		num = num / 16;
 		size++;
 	}
-	a = malloc(size + 1);
-	a[size] = '\0';
+	str = ft_calloc(size + 1, sizeof(char));
 	size--;
 	while (n >= 16 && 0 < size)
 	{
-		a[size] = base[n % 16];
+		str[size] = base[n % 16];
 		n = n / 16;
 		size--;
 	}
-	a[size--] = base[n % 16];
-	return (a);
+	str[size--] = base[n % 16];
+	return (str);
 }
 
-size_t	printstr(char *str)
+void	ft_printvoid(void *ptr)
 {
-	int		i;
-	size_t	printed_chars;
-
-	printed_chars = 0;
-	i = 0;
-	while (str[i] != '\0')
-	{
-		write(1, &str[i], 1);
-		i++;
-		printed_chars++;
-	}
-	return (printed_chars);
-}
-
-int	ft_printchar(char c, int w_count)
-{
-	write(1, &c, 1);
-	w_count++;
-	return (w_count);
-}
-
-int	ft_printvoid(void *ptr, int w_count)
-{
-	long int	ptrnum;
 	char		*strnum;
-	int			i;
 
-	i = 0;
-	ptrnum = (unsigned long int)ptr;
-	strnum = ft_itoa_void(ptrnum, "0123456789abcdefg");
-	write(1, "0x", 2);
-	w_count += 2;
-	while (strnum[i])
-	{
-		write(1, &strnum[i], 1);
-		i++;
-		w_count++;
+	strnum = ft_itoa_void((unsigned long int) ptr, "0123456789abcdefg");
+	if (!strnum)
+		ft_write("(nil)", 'n', 'e');
+	else
+	{	
+		ft_write("0x", 'n', 'e');
+		ft_write(strnum, 'n', 'i');
 	}
-	free(strnum);
-	return (w_count);
-}
-
-int	ft_lp(char *str, int size)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		write(1, &str[i++], 1);
-		size++;
-	}
-	free(str);
-	return (size);
-}
-
-char	*ft_itoa_unsig(unsigned int n)
-{
-	char			*a;
-	int				size;
-	unsigned int	num;
-
-	size = 0;
-	num = n;
-	if (num == 0)
-		size++;
-	while (num != 0)
-	{
-		num = num / 10;
-		size++;
-	}
-	a = (char *)malloc((size + 1) * sizeof(char));
-	if (!a)
-		return (0);
-	a[size--] = '\0';
-	while (n >= 10)
-	{
-		a[size] = n % 10 + '0';
-		n = n / 10;
-		size--;
-	}
-	a[size--] = n + '0';
-	return (a);
-}
-
-char	*ft_ib(unsigned int n, char *base)
-{
-	int				size;
-	char			*a;
-	unsigned int	num;
-
-	size = 0;
-	num = n;
-	if (num == 0)
-		size++;
-	while (num != 0)
-	{
-		num = num / 16;
-		size++;
-	}
-	a = malloc(size + 1);
-	a[size] = '\0';
-	size--;
-	while (n >= 16 && 0 < size)
-	{
-		a[size] = base[n % 16];
-		n = n / 16;
-		size--;
-	}
-	a[size--] = base[n % 16];
-	return (a);
-}
-
-int	ft_formatter(va_list args, char c, int w_count)
-{
-	if (c == 'c')
-		w_count = ft_printchar(va_arg(args, int), w_count);
-	if (c == 's')
-		w_count = ft_printstring(va_arg(args, char *, char caller), w_count);
-	if (c == 'p')
-		w_count = ft_printvoid(va_arg(args, void *), w_count);
-	if (c == 'd' || c == 'i')
-		w_count = ft_lp(ft_itoa(va_arg(args, int)), w_count);
-	if (c == 'u')
-		w_count = ft_lp(ft_itoa_unsig(va_arg(args, unsigned int)), w_count);
-	if (c == 'x')
-		w_count = ft_lp(ft_ib(va_arg(args, int), "0123456789abcdef"), w_count);
-	if (c == 'X')
-		w_count = ft_lp(ft_ib(va_arg(args, int), "0123456789ABCDEF"), w_count);
-	if (c == '%')
-	{
-		write(1, "%", 1);
-		w_count++;
-	}
-	return (w_count);
 }
