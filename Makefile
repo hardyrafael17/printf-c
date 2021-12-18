@@ -6,15 +6,14 @@
 #    By: hjimenez <hjimenez@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/15 19:30:06 by hjimenez          #+#    #+#              #
-#    Updated: 2021/12/17 14:10:15 by hjimenez         ###   ########.fr        #
+#    Updated: 2021/12/18 19:55:37 by hjimenez         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	=	libftprintf.a
 
 SRCS	=	ft_printf.c		\
-			utils.c			\
-			write_util.c
+			utils.c
 
 OBJS		= ${SRCS:.c=.o}
 
