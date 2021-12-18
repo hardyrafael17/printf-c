@@ -16,25 +16,22 @@ int	ft_printf(const char *fmt, ...)
 {
 	va_list	va_arg;
 	size_t	i;
-	size_t	word_count;
 
 	i = 0;
-	word_count = 0;
 	va_start(va_arg, fmt);
 	while (*(fmt + i))
 	{
 		if (*(fmt + i) == '%')
 		{
-			word_count = ft_formatter(va_arg, *(fmt + i + 1), word_count);
+			ft_formatter(va_arg, fmt[i + 1]);
 			i += 2;
 		}
 		else
 		{
-			write(1, (fmt + i), 1);
+			ft_write(NULL, fmt[i], 'c');
 			i++;
-			word_count++;
 		}
 	}
 	va_end(va_arg);
-	return (word_count);
+	return (ft_write(NULL, 'n', 'd'));
 }

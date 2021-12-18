@@ -106,6 +106,8 @@ char	*ft_itoa_void(unsigned long int n, char *base)
 	char				*a;
 	unsigned long int	num;
 
+	if (n == 0)
+		return (NULL);
 	size = 0;
 	num = n;
 	if (num == 0)
@@ -151,15 +153,18 @@ int	ft_printchar(char c, int w_count)
 	return (w_count);
 }
 
-int	ft_printvoid(void *ptr, int w_count)
+void	ft_printvoid(void *ptr)
 {
 	char		*strnum;
 
 	strnum = ft_itoa_void((unsigned long int) ptr, "0123456789abcdefg");
-	//replacing code
-	ft_write("0x", 'n', 'e');
-	ft_write(strnum, 'n', 'i');
-	return (1);
+	if (!strnum)
+		ft_write("(nil)", 'n', 'e');
+	else
+	{	
+		ft_write("0x", 'n', 'e');
+		ft_write(strnum, 'n', 'i');
+	}
 }
 
 int	ft_lp(char *str, int size)
@@ -233,23 +238,22 @@ char	*ft_ib(unsigned int n, char *base)
 	return (a);
 }
 
-int	ft_formatter(va_list args, char c, int w_count)
+void ft_formatter(va_list args, char c)
 {
 	if (c == 'c')
-		w_count = ft_write(NULL, va_arg(args, int), 'c');
+		ft_write(NULL, va_arg(args, int), 'c');
 	if (c == 's')
-		w_count = ft_write(va_arg(args, char *),'n', 'e');
+		ft_write(va_arg(args, char *),'n', 'e');
 	if (c == 'p')
-		w_count = ft_printvoid(va_arg(args, void *), w_count);
+		ft_printvoid(va_arg(args, void *));
 	if (c == 'd' || c == 'i')
-		w_count = ft_write(ft_itoa(va_arg(args, int)), 'n', 'i');
+		ft_write(ft_itoa(va_arg(args, int)), 'n', 'i');
 	if (c == 'u')
-		w_count = ft_write(ft_itoa_unsig(va_arg(args, unsigned int)), 'n', 'i');
+		ft_write(ft_itoa_unsig(va_arg(args, unsigned int)), 'n', 'i');
 	if (c == 'x')
-		w_count = ft_write(ft_ib(va_arg(args, int), "0123456789abcdef"), 'n', 'i');
+		ft_write(ft_ib(va_arg(args, int), "0123456789abcdef"), 'n', 'i');
 	if (c == 'X')
-		w_count = ft_write(ft_ib(va_arg(args, int), "0123456789ABCDEF"), 'n', 'i');
+		ft_write(ft_ib(va_arg(args, int), "0123456789ABCDEF"), 'n', 'i');
 	if (c == '%')
 		ft_write(NULL, '%', 'c');
-	return (w_count);
 }
